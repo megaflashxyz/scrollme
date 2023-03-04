@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scrolling Video List</title>
+	<style>
+		.video-container {
+			display: flex;
+			flex-wrap: nowrap;
+			overflow-x: scroll;
+			scroll-snap-type: x mandatory;
+			-ms-overflow-style: none;
+			scrollbar-width: none;
+		}
+		
+		.video-container::-webkit-scrollbar {
+			display: none;
+		}
+		
+		.video {
+			flex-shrink: 0;
+			width: 100%;
+			scroll-snap-align: center;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+		
+		.controls {
+			position: fixed;
+			top: 50%;
+			right: 0;
+			transform: translateY(-50%);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			background-color: rgba(0, 0, 0, 0.5);
+			padding: 10px;
+			border-radius: 5px;
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+		
+		.video:hover + .controls, .controls:hover {
+			opacity: 1;
+		}
+		
+		.controls button {
+			border: none;
+			background-color: transparent;
+			color: white;
+			font-size: 20px;
+			margin: 5px;
+			cursor: pointer;
+		}
+		
+		.controls button:focus {
+			outline: none;
+		}
+		
+		.controls button:first-child {
+			font-size: 30px;
+		}
+		
+		.controls button:last-child {
+			font-size: 40px;
+		}
+	</style>
+</head>
+<body>
+	<div class="video-container">
+		<video class="video" src="https://github.com/megaflashxyz/visual-stories-web/blob/main/assets/00220841149599002.mp4?raw=true" autoplay muted></video>
+		<video class="video" src="https://github.com/megaflashxyz/visual-stories-web/blob/main/assets/147724371300306222.mp4?raw=true" autoplay muted></video>
+		<video class="video" src="https://github.com/megaflashxyz/visual-stories-web/blob/main/assets/81965964694261019.mp4?raw=true" autoplay muted></video>
+		<video class="video" src="https://github.com/megaflashxyz/visual-stories-web/blob/main/assets/b7060136032510987521.mp4?raw=true" autoplay muted></video>
+		<video class="video" src="https://github.com/megaflashxyz/visual-stories-web/blob/main/assets/00220841149599002.mp4?raw=true" autoplay muted></video>
+	</div>
+	<div class="controls">
+		<button id="prev-video">&#8678;</button>
+		<button id="pause-video">&#10074;&#10074;</button>
+		<button id="next-video">&#8680;</button>
+	</div>
+	
+	<script>
+const videos = document.querySelectorAll('.video');
+const controls = document.querySelector('.controls');
+const prevButton = document.querySelector('#prev-video');
+const pauseButton = document.querySelector('#pause-video');
+const nextButton = document.querySelector('#next-video');
+
+let currentVideoIndex = 0;
+let isPaused = false;
+
+// autoplay next video when current video ends
+videos.forEach((video, index) => {
+	video.addEventListener('ended', () => {
+		if (index < videos.length - 1) {
+			playVideo(index + 1);
+		} else {
+			playVideo(0);
+		}
+	});
+});
+
+// pause video on tap
+videos.forEach((video) => {
+	video.addEventListener('click', () => {
+		if (isPaused) {
+			playVideo(currentVideoIndex);
+		} else {
+			pauseVideo();
+		}
+	});
+});
+
+// play video and update current video index
+function playVideo(index) {
+	videos[currentVideoIndex].pause();
+	videos[currentVideoIndex].currentTime = 0;
+	videos[index].play();
+	currentVideoIndex = index;
+	isPaused = false;
+}
+
+// pause video and set isPaused flag to true
+function pauseVideo() {
+	videos[currentVideoIndex].pause();
+	isPaused = true;
+}
+
+// play previous video
+prevButton.addEventListener('click', () => {
+	let index = currentVideoIndex - 1;
+	if (index < 0) {
+		index = videos.length - 1;
+	}
+	playVideo(index);
+});
+
+// pause or play current video
+pauseButton.addEventListener('click', () => {
+	if (isPaused) {
+		playVideo(currentVideoIndex);
+	} else {
+		pauseVideo();
+	}
+});
+
+// play next video
+nextButton.addEventListener('click', () => {
+	let index = currentVideoIndex + 1;
+	if (index > videos.length - 1) {
+		index = 0;
+	}
+	playVideo(index);
+});
+  </script>
